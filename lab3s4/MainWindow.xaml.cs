@@ -20,10 +20,8 @@ namespace lab3s4
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Action<object, RoutedEventArgs> XToN = delegate { };
         private List<double> NumberList;
 
-        private Action<object, RoutedEventArgs> CreateText = delegate { };
         private Func<double, double> PowerTo = delegate { return 0; };
 
         private Func<double, double, double> XToPowerN = (x, n) => Math.Pow(x,n);
@@ -67,45 +65,99 @@ namespace lab3s4
             else
                 return 0;
         };
+        private CompareTo<double> comperator = delegate { return 0; };
 
 
         public MainWindow()
         {
             InitializeComponent();
-            NumberList = new List<double>();
+            NumberList = new List<double>();        
+        }
 
-            CreateText = (sender, e) =>
+        public void CreatePerson(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string name = nameInput.Text;
+                string surname = surnameInput.Text;
+                DateTime birthDate = DateTime.Parse(birthDateInput.Text);
+                Person person = new Person(name, surname, birthDate);
+
+                personInfo.Text = person.ToString() +" | i: "+ person["Name"].ToString();
+            }
+            catch { }
+        }
+
+        public void XToN(object sender, RoutedEventArgs e) {
+            try
+            {
+                double x = double.Parse(xInput.Text);
+                double n = double.Parse(nInput.Text);
+
+                resultText.Text = XToPowerN(x, n).ToString();
+            }
+            catch { 
+            
+            }
+            
+        }
+
+        public void CreateText(object sender, RoutedEventArgs e) {
+            try
             {
                 string ch = characterInput.Text;
                 int length = int.Parse(textLengthInput.Text);
 
                 string text = CreateString(ch, length);
                 textResult.Text = text;
+            }
+            catch { }
+           
 
 
-            };
-
-            XToN = (sender, e) => {
-                double x = double.Parse(xInput.Text);
-                double n = double.Parse(xInput.Text);
-
-                resultText.Text = XToPowerN(x,n).ToString();
-
-            };
-        }
-
-        public void XToN(object sender, RoutedEventArgs e) {
-            double x = double.Parse(xInput.Text);
-            double n = double.Parse(xInput.Text);
-
-            resultText.Text = XToPowerN(x, n).ToString();
         }
 
         public void AddNumber(object sender, RoutedEventArgs e) {
-            double number = double.Parse(numberInput.Text);
-            NumberList.Add(number);
+            try
+            {
+                double number = double.Parse(numberInput.Text);
+                NumberList.Add(number);
 
-            LoadNumbersToListBox();
+                LoadNumbersToListBox();
+            }
+            catch { }
+           
+        }
+
+        public void ChangeToAscendingSort(object sender, RoutedEventArgs e) {
+            CheckBox checkBox = (CheckBox)sender;
+            if ((bool)checkBox.IsChecked) {
+                comperator = CompareToAscending;
+            }
+            else
+                comperator = delegate { return 0; };
+
+            DisableOtherCheckBoxes(checkBox);
+        }
+
+        public void ChangeToDescendingSort(object sender, RoutedEventArgs e)
+        {
+            CheckBox checkBox = (CheckBox)sender;
+            if ((bool)checkBox.IsChecked)
+            {
+                comperator = CompareToDescending;
+            }
+            else
+                comperator = delegate { return 0; };
+
+            DisableOtherCheckBoxes(checkBox);
+        }
+
+        public void DisableOtherCheckBoxes(CheckBox sender) {
+            if (!sender.Equals(ascendingCheckBox))
+                ascendingCheckBox.IsChecked = false;
+            if (!sender.Equals(descendingCheckBox))
+                descendingCheckBox.IsChecked = false;
         }
 
         public void LoadNumbersToListBox() {
@@ -117,7 +169,7 @@ namespace lab3s4
         }
 
         public void Sort(object sender, RoutedEventArgs e) {
-            BubbleSort<double>(NumberList, CompareToAscending);
+            BubbleSort<double>(NumberList, comperator);
 
             LoadNumbersToListBox();
         }
@@ -134,10 +186,15 @@ namespace lab3s4
         }
 
         public void UsePowerTo(object sender, RoutedEventArgs e) {
-            double x = double.Parse(xpInput.Text);
+            try
+            {
+                double x = double.Parse(xpInput.Text);
 
-            if(PowerTo != null)
                 powerResult.Text = PowerTo(x).ToString();
+
+            }
+            catch { }
+
         }
 
 
