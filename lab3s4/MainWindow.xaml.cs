@@ -24,7 +24,20 @@ namespace lab3s4
 
         private Func<double, double> PowerTo = delegate { return 0; };
 
-        private Func<double, double, double> XToPowerN = (x, n) => Math.Pow(x,n);
+        private Func<double, double, double> XToPowerN = (x, n) => {
+            if (n == 0)
+                return 1;
+
+            double result = 1;
+            for (int i = 0; i < Math.Abs(n); i++) {
+                result *= x; 
+            }
+
+            if (n < 0)
+                result = 1 / result;
+
+            return result;
+        };
         private Func<string, int, string> CreateString = (ch, length) => {
             string result = "";
             for (int i = 0; i < length; i++) {
